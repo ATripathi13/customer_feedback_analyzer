@@ -263,17 +263,32 @@
     - Create `tests/fixtures/expected_output.csv` for validation
     - _Requirements: 1.2, 1.3_
 
-- [ ] 11. Create documentation and setup files
-  - [ ] 11.1 Create requirements.txt
+- [x] 11. Create documentation and setup files
+
+
+
+
+
+
+
+  - [x] 11.1 Create requirements.txt
+
     - List all dependencies with versions
     - _Requirements: 6.1_
+
   
-  - [ ] 11.2 Create README.md
+  - [x] 11.2 Create README.md
+
     - Document installation instructions
     - Document usage examples
     - Document command-line arguments
     - Include example outputs
     - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 12. Final checkpoint - Ensure all tests pass
+- [x] 12. Final checkpoint - Ensure all tests pass
+
+
+
+
+
   - Ensure all tests pass, ask the user if questions arise.
