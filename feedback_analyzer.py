@@ -161,3 +161,178 @@ class SentimentAnalyzer:
         """
         # Even for short feedback, TextBlob can provide meaningful sentiment analysis
         return SentimentAnalyzer.get_polarity_score(feedback)
+
+
+class FeedbackCategorizer:
+    """Maps sentiment scores to categories (Happy, Sad, Mild)."""
+    
+    @staticmethod
+    def get_category_thresholds() -> dict:
+        """Get the threshold values for each category.
+        
+        Returns:
+            Dictionary mapping category names to their (min, max) threshold tuples
+        """
+        return {
+            'Happy': (0.1, 1.0),
+            'Sad': (-1.0, -0.1),
+            'Mild': (-0.1, 0.1)
+        }
+    
+    @staticmethod
+    def categorize(polarity_score: float) -> str:
+        """Map a polarity score to a sentiment category.
+        
+        Categorization logic:
+        - Happy: polarity > 0.1
+        - Sad: polarity < -0.1
+        - Mild: -0.1 <= polarity <= 0.1
+        
+        Args:
+            polarity_score: The sentiment polarity score to categorize
+            
+        Returns:
+            Category as string ("Happy", "Sad", or "Mild")
+        """
+        if polarity_score > 0.1:
+            return "Happy"
+        elif polarity_score < -0.1:
+            return "Sad"
+        else:
+            return "Mild"
+
+
+class ResultFormatter:
+    """Formats and displays analysis results."""
+    
+    @staticmethod
+    def format_result(feedback: str, category: str, score: float) -> str:
+        """Format a single feedback result as a string.
+        
+        Args:
+            feedback: The original feedback text
+            category: The assigned sentiment category
+            score: The sentiment polarity score
+            
+        Returns:
+            Formatted string representation of the result
+        """
+        return f"{feedback} | {category} | {score:.3f}"
+    
+    @staticmethod
+    def display_results(results: List[FeedbackResult]) -> None:
+        """Display all analysis results in a structured table format.
+        
+        Args:
+            results: List of FeedbackResult objects to display
+        """
+        if not results:
+            print("No results to display.")
+            return
+        
+        # Print header
+        print("\n" + "=" * 80)
+        print(f"{'Feedback':<50} | {'Category':<10} | {'Score':<10}")
+        print("=" * 80)
+        
+        # Print each result
+        for result in results:
+            # Truncate long feedback for display
+            feedback_display = result.feedback_text[:47] + "..." if len(result.feedback_text) > 50 else result.feedback_text
+            print(f"{feedback_display:<50} | {result.category:<10} | {result.sentiment_score:<10.3f}")
+        
+        print("=" * 80 + "\n")
+    
+    @staticmethod
+    def display_summary(results: List[FeedbackResult]) -> None:
+        """Display summary statistics with category counts.
+        
+        Args:
+            results: List of FeedbackResult objects to summarize
+        """
+        if not results:
+            print("No results to summarize.")
+            return
+        
+        # Count feedback by category
+        happy_count = sum(1 for r in results if r.category == "Happy")
+        sad_count = sum(1 for r in results if r.category == "Sad")
+        mild_count = sum(1 for r in results if r.category == "Mild")
+        total_count = len(results)
+        
+        # Create summary object
+        summary = AnalysisSummary(
+            total_count=total_count,
+            happy_count=happy_count,
+            sad_count=sad_count,
+            mild_count=mild_count
+        )
+        
+        # Display summary
+        print("\n" + "=" * 50)
+        print("ANALYSIS SUMMARY")
+        print("=" * 50)
+        print(f"Total Feedback: {summary.total_count}")
+        print(f"Happy: {summary.happy_count} ({summary.get_percentage('happy'):.1f}%)")
+        print(f"Sad: {summary.sad_count} ({summary.get_percentage('sad'):.1f}%)")
+        print(f"Mild: {summary.mild_count} ({summary.get_percentage('mild'):.1f}%)")
+        print("=" * 50 + "\n")
+
+
+class CSVExporter:
+    """Exports analysis results to CSV format."""
+    
+    @staticmethod
+    def create_output_directory(output_path: str) -> None:
+        """Create the output directory if it doesn't exist.
+        
+        Args:
+            output_path: Path to the output file
+        """
+        path = Path(output_path)
+        directory = path.parent
+        
+        # Create directory if it doesn't exist
+        if directory and not directory.exists():
+            directory.mkdir(parents=True, exist_ok=True)
+    
+    @staticmethod
+    def export(results: List[FeedbackResult], output_path: str) -> bool:
+        """Export analysis results to a CSV file.
+        
+        The CSV file will contain three columns: feedback, category, and sentiment_score.
+        If the output file already exists, it will be overwritten.
+        
+        Args:
+            results: List of FeedbackResult objects to export
+            output_path: Path where the CSV file should be saved
+            
+        Returns:
+            True if export was successful, False otherwise
+        """
+        try:
+            # Create output directory if needed
+            CSVExporter.create_output_directory(output_path)
+            
+            # Write results to CSV
+            with open(output_path, 'w', encoding='utf-8', newline='') as f:
+                writer = csv.writer(f)
+                
+                # Write header
+                writer.writerow(['feedback', 'category', 'sentiment_score'])
+                
+                # Write each result
+                for result in results:
+                    writer.writerow([
+                        result.feedback_text,
+                        result.category,
+                        result.sentiment_score
+                    ])
+            
+            # Confirm successful file creation
+            print(f"Results successfully exported to: {output_path}")
+            return True
+            
+        except Exception as e:
+            print(f"Error exporting results to CSV: {e}")
+            return False
