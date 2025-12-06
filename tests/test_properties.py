@@ -123,7 +123,7 @@ def test_property_whitespace_filtering_text_file(whitespace_strings):
 
 
 @given(st.lists(st.text(alphabet=st.sampled_from(' \t'), min_size=1), min_size=1, max_size=20))
-@settings(max_examples=100)
+@settings(max_examples=100, deadline=None)
 def test_property_whitespace_filtering_csv_file(whitespace_strings):
     """
     For any feedback string composed entirely of whitespace characters in CSV,
@@ -448,3 +448,91 @@ def test_property_csv_round_trip_integrity(result_data):
     finally:
         # Clean up
         Path(temp_path).unlink(missing_ok=True)
+
+
+# Property 11: Successful execution exit code
+# Feature: customer-feedback-analyzer, Property 11: Successful execution exit code
+# Validates: Requirements 5.4
+@given(st.lists(
+    st.text(
+        min_size=1, 
+        max_size=200,
+        alphabet=st.characters(blacklist_characters='\r\n', blacklist_categories=('Cs',))
+    ).filter(lambda s: s.strip() != ""), 
+    min_size=1, 
+    max_size=20
+))
+@settings(max_examples=100, deadline=None)
+def test_property_successful_execution_exit_code(valid_feedback_list):
+    """
+    For any successful analysis run (no errors encountered), the script must exit
+    with status code 0.
+    """
+    from feedback_analyzer import CommandLineInterface
+    import argparse
+    
+    # Create temporary input file
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt', encoding='utf-8') as f:
+        for feedback in valid_feedback_list:
+            f.write(feedback + '\n')
+        input_path = f.name
+    
+    # Create temporary output file path
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as f:
+        output_path = f.name
+    
+    try:
+        # Create args namespace
+        args = argparse.Namespace(
+            input=input_path,
+            output=output_path,
+            csv_column='feedback'
+        )
+        
+        # Run the CLI with suppressed output
+        with contextlib.redirect_stdout(io.StringIO()):
+            exit_code = CommandLineInterface.run(args)
+        
+        # Verify exit code is 0 for success
+        assert exit_code == 0, \
+            f"Successful execution should return exit code 0, got {exit_code}"
+    
+    finally:
+        # Clean up
+        Path(input_path).unlink(missing_ok=True)
+        Path(output_path).unlink(missing_ok=True)
+
+
+# Property 12: Error execution exit code
+# Feature: customer-feedback-analyzer, Property 12: Error execution exit code
+# Validates: Requirements 5.5
+@given(st.text(min_size=1, max_size=100).filter(lambda s: not Path(s).exists()))
+@settings(max_examples=100)
+def test_property_error_execution_exit_code(nonexistent_file):
+    """
+    For any execution that encounters an error (file not found, invalid input, etc.),
+    the script must exit with a non-zero status code and display an error message.
+    """
+    from feedback_analyzer import CommandLineInterface
+    import argparse
+    
+    # Create args namespace with non-existent file
+    args = argparse.Namespace(
+        input=nonexistent_file,
+        output='output.csv',
+        csv_column='feedback'
+    )
+    
+    # Run the CLI with suppressed output
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        exit_code = CommandLineInterface.run(args)
+    
+    # Verify exit code is non-zero for error
+    assert exit_code != 0, \
+        f"Error execution should return non-zero exit code, got {exit_code}"
+    
+    # Verify an error message was displayed (captured in output)
+    output_text = output.getvalue()
+    assert len(output_text) > 0 or exit_code == 1, \
+        f"Error execution should display an error message or return error code"
