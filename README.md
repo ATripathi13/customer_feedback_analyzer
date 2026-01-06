@@ -1,17 +1,55 @@
-# Customer Feedback Analyzer
+# 🧠 Customer Feedback Analyzer
 
-A Python command-line tool that automatically analyzes and categorizes customer feedback using sentiment analysis. The tool processes feedback from various sources and classifies it into three categories: Happy, Sad, and Mild.
+A **Python-based command-line tool** that automatically analyzes and categorizes customer feedback using **sentiment analysis**.  
+This tool helps teams quickly understand customer emotions by classifying feedback into **Happy**, **Sad**, and **Mild** categories — enabling data-driven decisions with minimal effort.
 
-## Features
+> 🚀 Built for automation, scalability, and real-world text analytics workflows.
 
-- Analyze customer feedback from text files or CSV files
-- Automatic sentiment categorization (Happy, Sad, Mild)
-- Numerical sentiment scoring (-1.0 to +1.0)
-- Export results to CSV format
+---
+
+## ✨ Why This Project Is Interesting
+
+- 📊 Converts **raw, unstructured customer feedback** into structured insights
+- ⚙️ Designed as a **CLI tool**, making it easy to integrate into ETL pipelines or cron jobs
+- 🧪 Includes **unit tests + property-based tests**, showing production-quality engineering
+- 📈 Generates **actionable metrics** (sentiment scores, category distributions)
+- 🧠 Demonstrates applied NLP concepts in a practical, business-focused use case
+
+---
+
+## 🛠️ Tech Stack & Programming Languages
+
+### 💻 Core Language
+- **Python 3.7+**
+
+### 🧠 NLP & ML
+- **TextBlob** – Sentiment polarity analysis
+- Rule-based sentiment categorization
+
+### 🧪 Testing & Quality
+- **pytest** – Unit testing
+- **hypothesis** – Property-based testing
+- **pytest-cov** – Test coverage
+
+### 📁 Data Handling
+- CSV parsing & generation
+- File I/O (TXT & CSV)
+
+---
+
+## 🔑 Features
+
+- Analyze customer feedback from **text files or CSV files**
+- Automatic sentiment categorization (**Happy, Sad, Mild**)
+- Numerical sentiment scoring (**-1.0 to +1.0**)
+- Export results to **CSV format**
 - Summary statistics for all feedback categories
-- Command-line interface for easy automation
+- **Command-line interface** for easy automation
+- Graceful error handling with meaningful exit codes
 
-## Installation
+---
+
+## 📦 Installation
 
 ### Prerequisites
 
@@ -210,5 +248,6 @@ This project is provided as-is for educational and commercial use.
 Contributions are welcome! Please ensure all tests pass before submitting changes.
 
 ## Support
+
 
 For issues or questions, please refer to the project documentation or create an issue in the repository.
