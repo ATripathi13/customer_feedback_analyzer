@@ -17,10 +17,10 @@ This tool helps teams quickly understand customer emotions by classifying feedba
 
 ---
 
-## 🛠️ Tech Stack & Programming Languages
+## 🛠️ Tech Stack & Programming Languages 
 
 ### 💻 Core Language
-- **Python 3.7+**
+- **Python 3.7+** <img src="https://skillicons.dev/icons?i=python,ml" />
 
 ### 🧠 NLP & ML
 - **TextBlob** – Sentiment polarity analysis
@@ -251,3 +251,4 @@ Contributions are welcome! Please ensure all tests pass before submitting change
 
 
 For issues or questions, please refer to the project documentation or create an issue in the repository.
+
